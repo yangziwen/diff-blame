@@ -1,7 +1,6 @@
 package io.github.yangziwen.blame.diff;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Collection;
 
 import org.eclipse.jgit.diff.ContentSource;
@@ -10,7 +9,6 @@ import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.LargeObjectException;
 import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.lib.AbbreviatedObjectId;
-import org.eclipse.jgit.lib.AnyObjectId;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.FileMode;
 import org.eclipse.jgit.lib.ObjectId;
@@ -30,10 +28,6 @@ public class DiffHelper {
     private static final Field DIFF_ENTRY_OLD_ID_FIELD = getField(DiffEntry.class, "oldId");
 
     private static final Field DIFF_ENTRY_NEW_ID_FIELD = getField(DiffEntry.class, "newId");
-
-    private static final Method DIFF_ENTRY_ADD_METHOD = getDiffEntryAddMethod();
-
-    private static final Method DIFF_ENTRY_MODIFY_METHOD = getDiffEntryModifyMethod();
 
     private static final byte[] EMPTY = new byte[] {};
 
@@ -120,44 +114,6 @@ public class DiffHelper {
             Field field = clazz.getDeclaredField(fieldName);
             field.setAccessible(true);
             return field;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static DiffEntry createAddDiffEntry(String path, AnyObjectId id) {
-        try {
-            return (DiffEntry) DIFF_ENTRY_ADD_METHOD.invoke(null, path, id);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static DiffEntry createModifyDiffEntry(String path) {
-        try {
-            return (DiffEntry) DIFF_ENTRY_MODIFY_METHOD.invoke(null, path);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static Method getDiffEntryAddMethod() {
-        Method method;
-        try {
-            method = DiffEntry.class.getDeclaredMethod("add", String.class, AnyObjectId.class);
-            method.setAccessible(true);
-            return method;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static Method getDiffEntryModifyMethod() {
-        Method method;
-        try {
-            method = DiffEntry.class.getDeclaredMethod("modify", String.class);
-            method.setAccessible(true);
-            return method;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
